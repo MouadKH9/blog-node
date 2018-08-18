@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+
+<div class="container main-cont">
+  <div class="row">
+    <div class="col-sm-12 col-md-9">
+      <% articles.forEach((el)=>{ %>
+        <a class="link-me" data-ref='<%= el.title %>' href="#">
+          <div class="row article-info">
+            <div class="col-md-3">
+              <img src="<%= el.image %>" alt="Article Image">
+            </div>
+            <div class="col-md-9">
+              <div class="row">
+                <h4><%= el.title %></h4>
+              </div>
+              <div class="row">
+                <p>
+                  <%- el.article %>
+                </p>
+              </div>
+            </div>
+          </div>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

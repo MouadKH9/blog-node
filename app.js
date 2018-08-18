@@ -1,18 +1,18 @@
-//setting up express
+// Loading modules
 const express = require('express');
 const mongoose = require('mongoose');
-const session = require('client-sessions');
+
+
+// Setting up the app
 const app = express();
+
 app.set('view engine','ejs');
 app.use('/assets',express.static('assets'));
-app.use(session({
-  cookieName: 'session',
-  secret: '24919mcioenmjc224919mcioenmjc2iupfjfe',
-  duration: 30 * 60 * 1000,
-  activeDuration: 5 * 60 * 1000
-}));
-//loading the controllers
+
+// Loading the controller
 const Articles = require('./controllers/Articles');
 var article = new Articles(app);
+
+
 //starting the server
-app.listen(3000);
+app.listen(3000,()=>console.log("Started the server at " + 3000));

@@ -1,29 +1,36 @@
+// Loading the modules
 const bodyParser = require('body-parser');
 const session = require('client-sessions');
 const db = require('./db');
 
-var urlencodedParser = bodyParser.urlencoded({ extended: false });
+let urlencodedParser = bodyParser.urlencoded({ extended: false });
+
+// Exporting the whole class
 module.exports = class Articles{
 
   constructor(app) {
+    // Connecting to the database
     db.connect();
+
+    // Setting the routes
     app.get('/',(req,res)=>{
       db.articleModel.find({},(err,result)=>{
         if(err) throw err;
         res.render('home',{articles:result});
       });
     });
+
     app.get('/article/:title',(req,res)=>{
-      var title = req.params.title;
+      let title = req.params.title;
       title = title.replace(/\s+/g, '-').toLowerCase();
       if(title=='new'){
         res.render('article-new');
       }else{
         db.articleModel.find({},(err,result)=>{
           if (err) throw err;
-          var found = false;
+          let found = false;
           result.forEach((el)=>{
-            var tmp = el.title;
+            let tmp = el.title;
             tmp = tmp.replace(/\s+/g, '-').toLowerCase();
             if (tmp == title) {
               res.render('article',{data:el});
@@ -34,12 +41,13 @@ module.exports = class Articles{
         });
       }
     });
+
     app.post('/article',urlencodedParser,(req,res)=>{
       if (!req.body) return res.sendStatus(400);
-      var today = new Date();
-      var dd = today.getDate();
-      var mm = today.getMonth()+1; //January is 0!
-      var yyyy = today.getFullYear();
+      let today = new Date();
+      let dd = today.getDate();
+      let mm = today.getMonth()+1; //January is 0!
+      let yyyy = today.getFullYear();
 
       if(dd<10) {
         dd = '0'+dd

@@ -45,4 +45,19 @@
         </li>
       </ul>
     </div>
+    <% if(session.username){ %>
+      <div class="btn-group user">
+        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fa fa-user"></i>  <%= session.username %>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right">
+          <a class="dropdown-item" href="/user/<%= session.username %>">Profile</a>
+          <% if(session.level !== "reader"){%>
+            <a class="dropdown-item" href="#">Admin Panel</a>
+          <% } %>
+          <a class="dropdown-item" href="/logout">Log out</a>
+        </div>
+      </div>
+    <% } %>
+
   </nav>

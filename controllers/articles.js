@@ -1,6 +1,6 @@
 // Loading the modules
 const bodyParser = require('body-parser');
-const session = require('client-sessions');
+const session = require('express-session');
 const db = require('./db');
 
 let urlencodedParser = bodyParser.urlencoded({ extended: false });
@@ -12,19 +12,36 @@ module.exports = class Articles{
     // Connecting to the database
     db.connect();
 
+    // Set up the session
+    app.use(session({
+      name: 'cookie-name',
+      secret: 'shhht',
+      saveUninitialized: true,
+      resave: true
+    }));
+
+    app.use((req,res,next)=>{
+      // req.session.username = "Mouad";
+      next();
+    });
+
     // Setting the routes
-    app.get('/',(req,res)=>{
+    app.get('/',(req,res) => {
       db.articleModel.find({},(err,result)=>{
         if(err) throw err;
-        res.render('home',{articles:result});
+        res.render('home',{
+          session:req.session,
+          articles:result
+        });
       });
     });
 
-    app.get('/article/:title',(req,res)=>{
+    app.get('/article/:title',(req,res) => {
       let title = req.params.title;
       title = title.replace(/\s+/g, '-').toLowerCase();
       if(title=='new'){
-        res.render('article-new');
+        res.render('article-new',{session:req.session});
+        console.log(req.session.id);
       }else{
         db.articleModel.find({},(err,result)=>{
           if (err) throw err;
@@ -33,7 +50,7 @@ module.exports = class Articles{
             let tmp = el.title;
             tmp = tmp.replace(/\s+/g, '-').toLowerCase();
             if (tmp == title) {
-              res.render('article',{data:el});
+              res.render('article',{session:req.session,data:el});
               found = true;
             }
           });
@@ -42,7 +59,7 @@ module.exports = class Articles{
       }
     });
 
-    app.post('/article',urlencodedParser,(req,res)=>{
+    app.post('/article',urlencodedParser,(req,res) => {
       if (!req.body) return res.sendStatus(400);
       let today = new Date();
       let dd = today.getDate();
@@ -58,7 +75,7 @@ module.exports = class Articles{
       }
 
       today = dd + '-' + mm + '-' + yyyy;
-      var data = {
+      let data = {
         title: req.body.title,
         article:req.body.article,
         author:req.body.author,
@@ -70,9 +87,55 @@ module.exports = class Articles{
       res.send("200");
     });
 
-    app.get('/login',(req,res)=>{
-      res.render('login');
+    app.get('/login',(req,res) => {
+      if (req.session.email) {
+        res.redirect('/');
+      }else{
+        res.render('login',{session:req.session});
+      }
+    });
+    
+    app.get('/signup',(req,res) => {
+      if (req.session.email) {
+        res.redirect('/');
+      }else{
+        res.render('signup',{session:req.session});
+      }
+    });
+    
+    app.post('/login',urlencodedParser,(req,res) => {
+      let data = req.body;
+      db.userModel.findOne({email:data.email}, (err,user) => {
+        if(err) throw err;
+        if(user && user.password === data.password){
+          req.session.email = user.email;
+          req.session.username = user.username;
+          req.session.level = user.level;
+          res.redirect('/');
+        }else{
+          res.render('login',{error:true});
+        }
+      });
+    });
+
+    app.post('/signup',urlencodedParser ,(req,res) => {
+      let tmp = new db.userModel({
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password
+      });
+      tmp.save((err)=>{
+        if(err) throw err;
+        req.session.email = req.body.email;
+        req.session.username = req.body.username;
+        req.session.level = "reader";
+        res.redirect('/');
+      });
+    });
+
+    app.get('/logout',(req,res) => {
+      if(req.session.username) req.session.destroy();
+      res.redirect(req.get('Referrer'));
     });
   }
-
 }

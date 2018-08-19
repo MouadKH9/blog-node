@@ -4,7 +4,7 @@ body{
   font-family: Roboto;
 }
 
-.navbar a{
+.navbar ul a{
   color: white;
   font-size: 1.3em;
 }
@@ -67,4 +67,8 @@ footer{
 }
 .info{
   width: 100%;
+}
+.user{
+  float: right;
+  font-size: 1.3em;
 }

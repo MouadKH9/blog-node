@@ -1,22 +1,28 @@
-<%- include('partials/header') %>
-<link rel="stylesheet" href="/assets/login.css">
-<div class="wrapper">
-  <form class="login" action="/signup" method="post">
-    <p class="title">Sign up</p>
-    <input type="email" name="email" placeholder="Email" autofocus/>
-    <i class="fa fa-envelope"></i>
-    <input type="text" name="username" placeholder="Username" autofocus/>
-    <i class="fa fa-user"></i>
-    <input type="password" name="password" placeholder="Password" />
-    <i class="fa fa-key"></i>
-    <a href="#">Forgot your password?</a>
-    <button>
-    <i class="spinner"></i>
-    <span class="state">Sign up</span>
-    </button>
-  </form>
-  <footer>
-    <a href="/login">Login</a>
-  </footer>
-  </p>
-</div>
+<!DOCTYPE html>
+<html>
+  <%- include('partials/head') %>
+  <body>
+
+    <link rel="stylesheet" href="/assets/login.css">
+    <div class="wrapper">
+      <form class="login" action="/signup" method="post">
+        <p class="title">Sign up</p>
+        <input type="email" name="email" placeholder="Email" autofocus/>
+        <i class="fa fa-envelope"></i>
+        <input type="text" name="username" placeholder="Username" autofocus/>
+        <i class="fa fa-user"></i>
+        <input type="password" name="password" placeholder="Password" />
+        <i class="fa fa-key"></i>
+        <a href="#">Forgot your password?</a>
+        <button>
+        <i class="spinner"></i>
+        <span class="state">Sign up</span>
+        </button>
+      </form>
+      <footer>
+        <a href="/">Home</a> | <a href="/login">Login</a>
+      </footer>
+      </p>
+    </div>
+  </body>
+</html>

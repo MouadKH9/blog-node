@@ -1,29 +1,17 @@
 // Loading modules
-const express = require('express');
-const mongoose = require('mongoose');
-const session = require('express-session');
-const cookieParser = require('cookie-parser');
-
+const express = require("express");
+const mongoose = require("mongoose");
 
 // Setting up the app
 const app = express();
-
-app.set('view engine','ejs');
-app.use('/assets',express.static('assets'));
-
-// Set up the session
-app.use(session({
-  name: 'cookie-name',
-  secret: 'shhht',
-  saveUninitialized: true,
-  resave: true
-}));
-app.use(cookieParser());
+app.use("/assets", express.static("assets"));
+module.exports.app = app;
 
 // Loading the controller
-const Articles = require('./controllers/Articles');
-var article = new Articles(app);
-
+const Controller = require("./controllers/Articles");
+const controller = new Controller();
+controller.setApp();
+controller.setRoutes();
 
 //starting the server
-app.listen(3000,()=>console.log("Started the server at " + 3000));
+app.listen(3000, () => console.log("Started the server at " + 3000));

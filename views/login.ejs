@@ -1,24 +1,29 @@
-<%- include('partials/header') %>
-<link rel="stylesheet" href="/assets/login.css">
-<div class="wrapper">
-  <form class="login" action="/login" method="post">
-    <p class="title">Log in</p>
-    <input type="email" name="email" placeholder="Email" autofocus/>
-    <i class="fa fa-envelope"></i>
-    <input type="password" name="password" placeholder="Password" />
-    <i class="fa fa-key"></i>
-    <label for="stay">
-      <input style="display:inline;width:inherit" type="checkbox" name="stay">
-      Stay logged in?
-    </label><br>
-    <a href="#">Forgot your password?</a>
-    <button>
-      <i class="spinner"></i>
-      <span class="state">Log in</span>
-    </button>
-  </form>
-  <footer>
-    <a href="/signup">Sign Up</a>
-  </footer>
-  </p>
-</div>
+<!DOCTYPE html>
+<html>
+  <%- include('partials/head') %>
+  <body>
+    <link rel="stylesheet" href="/assets/login.css">
+    <div class="wrapper">
+      <form class="login" action="/login" method="post">
+        <p class="title">Log in</p>
+        <input type="email" name="email" placeholder="Email" autofocus/>
+        <i class="fa fa-envelope"></i>
+        <input type="password" name="password" placeholder="Password" />
+        <i class="fa fa-key"></i>
+        <label for="stay">
+          <input style="display:inline;width:inherit" type="checkbox" name="stay">
+          Stay logged in?
+        </label><br>
+        <a href="#">Forgot your password?</a>
+        <button>
+          <i class="spinner"></i>
+          <span class="state">Log in</span>
+        </button>
+      </form>
+      <footer>
+        <a href="/">Home</a> | <a href="/signup">Sign Up</a>
+      </footer>
+      </p>
+    </div>
+  </body>
+</html>

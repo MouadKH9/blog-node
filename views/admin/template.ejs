@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <%- include('../partials/head') %>
+  <link rel="stylesheet" href="../assets/admin.css">
+  <body>
+    <div class="admin">
+      <header class="admin__header">
+        <a href="#" class="logo">
+          <h1>Admin Panel</h1>
+        </a>
+        <div class="toolbar">
+          <a href="/" class="btn btn--primary">Visit Site</a>
+          <a href="/logout" class="logout">
+            Log Out
+          </a>
+        </div>
+      </header>
+      <nav class="admin__nav">
+        <ul class="menu">
+          <li class="menu__item">
+            <a class="menu__link" href="/admin/dashboard">Dashboard</a>
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="/admin/articles">Articles</a>
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="/admin/users">Users</a>
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="#">Servers</a>
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="#">Foobars</a>
+          </li>
+          <li class="menu__item">
+            <a class="menu__link" href="#">Plumbuses</a>
+          </li>
+        </ul>
+      </nav>
+      <main class="admin__main">
+        <%- include(panel) %>
+      </main>
+      <footer class="admin__footer">
+        <ul class="ticker">
+          <li class="ticker__item">BTC: +3.12%</li>
+          <li class="ticker__item">ETH: +1.29%</li>
+          <li class="ticker__item">XRP: -0.32%</li>
+          <li class="ticker__item">BCH: -2.82%</li>
+          <li class="ticker__item">EOS: +1.44%</li>
+          <li class="ticker__item">CSS: +13.37%</li>
+        </ul>
+        <span>
+          &copy; 2018 Grid Inc.
+        </span>
+      </footer>
+    </div>
+  </body>
+</html>

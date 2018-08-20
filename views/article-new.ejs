@@ -1,4 +1,4 @@
-<%- include('partials/header') %>
+<%- include('partials/nav') %>
 
 <div class="container main-cont">
   <div class="row">
@@ -19,32 +19,32 @@
 </div>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote-bs4.js"></script>
 <script type="text/javascript">
-  $(document).ready(function() {
-    $('.summernote').summernote({
-      height:300
-    });
+$(document).ready(function() {
+  $(".summernote").summernote({
+    height: 300
   });
-  $(".submit").on('click',(e)=>{
-    e.preventDefault();
-    $.ajax({
-      url: './',
-      method:'POST',
-      data:{
-        title:$("input[name='title']").val(),
-        article:$("textarea").val(),
-        author:$("input[name='author']").val()
-      },
-      success: function(data){
-        if (data == '200') {
-          var title = $("input[name='title']").val();
-          title = title.replace(/\s+/g, '-').toLowerCase();
-          $("#link").prop('href','/article/'+title);
-          $("form").fadeOut('slow',function() {
-            $(".success").fadeIn('fast');
-          });
-        }
+});
+$(".submit").on("click", e => {
+  e.preventDefault();
+  $.ajax({
+    url: "./",
+    method: "POST",
+    data: {
+      title: $("input[name='title']").val(),
+      article: $("textarea").val(),
+      author: $("input[name='author']").val()
+    },
+    success: function(data) {
+      if (data == "200") {
+        var title = $("input[name='title']").val();
+        title = title.replace(/\s+/g, "-").toLowerCase();
+        $("#link").prop("href", "/article/" + title);
+        $("form").fadeOut("slow", function() {
+          $(".success").fadeIn("fast");
+        });
       }
-    });
+    }
   });
+});
 </script>
 <%- include('partials/footer') %>

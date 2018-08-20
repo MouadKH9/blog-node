@@ -72,3 +72,10 @@ footer{
   float: right;
   font-size: 1.3em;
 }
+.user button{
+  color: black;
+  background-color: #ffffff;
+}
+.user button:hover{
+  background-color: #f9f9f9;
+}

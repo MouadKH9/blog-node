@@ -9,7 +9,7 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 const app = require("../app").app;
 
 let axios = Axios.create({
-  baseURL: "https://https://blog-mouad.herokuapp.com/"
+  baseURL: "https://blog-mouad.herokuapp.com/"
 });
 let urlencodedParser = bodyParser.urlencoded({ extended: false });
 // Exporting the whole class
@@ -136,7 +136,6 @@ class Controller {
       axios
         .get("api/articles")
         .then(articles => {
-          console.log(articles.data);
           res.render("home", {
             session: req.session,
             articles: articles.data

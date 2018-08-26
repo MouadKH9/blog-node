@@ -143,7 +143,7 @@ class Controller {
           });
         })
         .catch(err => {
-          console.log("MEH:" + err);
+          console.log("api/article:\n" + err);
         });
     });
 
@@ -159,7 +159,7 @@ class Controller {
           }
         })
         .catch(err => {
-          console.log(err);
+          console.log("api/article/\n" + err);
         });
     });
 

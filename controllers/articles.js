@@ -3,13 +3,15 @@ const bodyParser = require("body-parser");
 const db = require("./db");
 const helpers = require("./helpers");
 const cookieParser = require("cookie-parser");
-const fetch = require("node-fetch");
+const Axios = require("axios");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const app = require("../app").app;
 
+let axios = Axios.create({
+  baseURL: "https://https://blog-mouad.herokuapp.com/"
+});
 let urlencodedParser = bodyParser.urlencoded({ extended: false });
-
 // Exporting the whole class
 class Controller {
   setApp() {
@@ -46,20 +48,24 @@ class Controller {
 
     app.get("/api/article/:title", (req, res) => {
       let title = req.params.title;
+      let found = false;
       title = helpers.trimString(title);
-      db.articleModel.find({}, (err, result) => {
-        if (err) throw err;
-        let found = false;
-        result.forEach(el => {
-          let tmp = el.title;
-          tmp = helpers.trimString(tmp);
-          if (tmp === title) {
-            res.send(el);
-            found = true;
-          }
+      db.articleModel
+        .find({}, (err, result) => {
+          if (err) throw err;
+
+          result.forEach(el => {
+            let tmp = el.title;
+            tmp = helpers.trimString(tmp);
+            if (tmp === title && !found) {
+              res.send(el);
+              found = true;
+            }
+          });
+        })
+        .then(() => {
+          if (!found) res.send({ error: true });
         });
-        if (!found) res.send({ error: true });
-      });
     });
 
     app.post("/api/deleteArticle/:id", urlencodedParser, (req, res) => {
@@ -119,7 +125,7 @@ class Controller {
     });
     app.use((req, res, next) => {
       db.settingsModel.findById(db.settingsId, (err, settings) => {
-        if (err) next(err);
+        if (err) console.log(err);
         else {
           req.session.settings = settings;
           next();
@@ -127,26 +133,33 @@ class Controller {
       });
     });
     app.get("/", (req, res) => {
-      fetch("http://localhost:3000/api/articles")
-        .then(articles => articles.json())
+      axios
+        .get("api/articles")
         .then(articles => {
+          console.log(articles.data);
           res.render("home", {
             session: req.session,
-            articles: articles
+            articles: articles.data
           });
+        })
+        .catch(err => {
+          console.log("MEH:" + err);
         });
     });
 
     app.get("/article/:title", (req, res) => {
       let title = req.params.title;
-      fetch("http://localhost:3000/api/article/" + title)
-        .then(article => article.json())
+      axios
+        .get("api/article/" + title)
         .then(article => {
-          if (article.error) {
+          if (article.data.error) {
             res.render("404");
           } else {
-            res.render("article", { session: req.session, data: article });
+            res.render("article", { session: req.session, data: article.data });
           }
+        })
+        .catch(err => {
+          console.log(err);
         });
     });
 

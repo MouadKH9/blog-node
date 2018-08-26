@@ -13,7 +13,6 @@ const controller = new Controller();
 controller.setApp();
 controller.setApi();
 controller.setRoutes();
-
 //starting the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Started the server at " + 3000));

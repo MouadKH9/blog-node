@@ -8,7 +8,7 @@ app.use("/assets", express.static("assets"));
 module.exports.app = app;
 
 // Loading the controller
-const Controller = require("./controllers/Articles");
+const Controller = require("./controllers/articles");
 const controller = new Controller();
 controller.setApp();
 controller.setApi();

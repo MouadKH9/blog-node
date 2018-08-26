@@ -21,24 +21,22 @@
             <a class="menu__link" href="/admin/dashboard">Dashboard</a>
           </li>
           <li class="menu__item">
-            <a class="menu__link" href="/admin/articles">Articles</a>
+            <a class="menu__link sub-trigger" href="#">Articles</a>
+            <ul class="sub__item">
+              <li><a class="menu__link" href="/admin/articles">List Articles</a></li>
+              <li><a class="menu__link" href="/admin/add-article">Add Article</a></li>
+            </ul>
           </li>
           <li class="menu__item">
             <a class="menu__link" href="/admin/users">Users</a>
           </li>
           <li class="menu__item">
-            <a class="menu__link" href="#">Servers</a>
-          </li>
-          <li class="menu__item">
-            <a class="menu__link" href="#">Foobars</a>
-          </li>
-          <li class="menu__item">
-            <a class="menu__link" href="#">Plumbuses</a>
+            <a class="menu__link" href="settings">Settings</a>
           </li>
         </ul>
       </nav>
       <main class="admin__main">
-        <%- include(panel) %>
+        <%- include(panel,{data:data,session:session}) %>
       </main>
       <footer class="admin__footer">
         <ul class="ticker">
@@ -50,9 +48,17 @@
           <li class="ticker__item">CSS: +13.37%</li>
         </ul>
         <span>
-          &copy; 2018 Grid Inc.
+          &copy; 2018 Mouad K.
         </span>
       </footer>
     </div>
+    <script type="text/javascript">
+    $(".sub-trigger").on("click", function() {
+  $(this)
+    .parent()
+    .children("ul")
+    .slideToggle("fast");
+});
+</script>
   </body>
 </html>

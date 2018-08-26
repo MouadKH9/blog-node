@@ -11,7 +11,9 @@ module.exports.app = app;
 const Controller = require("./controllers/Articles");
 const controller = new Controller();
 controller.setApp();
+controller.setApi();
 controller.setRoutes();
 
 //starting the server
-app.listen(3000, () => console.log("Started the server at " + 3000));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log("Started the server at " + 3000));

@@ -116,6 +116,11 @@ img {
   color: #fff;
   background-color: #dc5a60;
   font-size: 1rem;
+  font-family: Roboto;
+}
+.logo:hover {
+  text-decoration: none;
+  color: white;
 }
 .logo h1 {
   margin: 0;
@@ -158,6 +163,16 @@ img {
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+.card-table {
+  height: 100%;
+  padding: 1rem;
+  font-size: 1.2rem;
+  font-weight: 300;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
 .btn {
   display: inline-block;
   border-radius: 5em;
@@ -179,4 +194,20 @@ img {
 }
 .ticker__item {
   margin-right: 1rem;
+}
+.dashboard form input,
+.dashboard form button,
+.dashboard form textarea {
+  margin: 10px 0;
+}
+.sub__item {
+  padding: 0;
+  background-color: #1f222d;
+  display: none;
+}
+.sub__item li {
+  padding-left: 20px;
+}
+.hidden {
+  opacity: 0;
 }

@@ -5,27 +5,33 @@
       <table class="table table-hover">
         <thead>
           <tr>
-            <th scope="col">Title</th>
-            <th scope="col">Author</th>
+            <th scope="col">Username</th>
+            <th scope="col">E-mail</th>
             <th scope="col">Date</th>
-            <th scope="col">Views</th>
-            <th scope="col">Edit</th>
+            <th scope="col">Level</th>
             <th scope="col">Delete</th>
           </tr>
         </thead>
         <tbody>
-          <% data.forEach((article => { %>
+          <% data.forEach((user => { %>
             <tr>
-              <th scope="row"><%= article.title %></th>
-              <td><%= article.author %></td>
-              <td><%= article.date %></td>
-              <td><%= article.views %></td>
-              <td><a href="#"><i data-id="<%= article._id %>" class="fa fa-edit"></i></a></td>
-              <td><i onclick="deleteConfirm(this)" data-id="<%= article._id %>" class="fa fa-trash text-danger" style="cursor:pointer"></i></td>
+              <input type="hidden" value="<%= user._id %>">
+              <th scope="row"><%= user.username %></th>
+              <td><%= user.email %></td>
+              <td><%= user.date %></td>
+              <td>
+                <select data-level="<%= user.level %>" class="form-control" id="level">
+                  <option value="admin">Admin</option>
+                  <option value="creator">Creator</option>
+                  <option value="reader">Reader</option>
+                </select>
+              </td>
+              <td><i onclick="deleteConfirm(this)" data-id="<%= user._id %>" class="fa fa-trash text-danger" style="cursor:pointer"></i></td>
             </tr>
           <% })) %>
         </tbody>
       </table>
+      <button class="btn btn-info submit float-right hidden">Save</button>
     </div>
   </div>
   <div class="dashboard__item dashboard__item--col">
@@ -44,6 +50,29 @@
 <script type="text/javascript" src="/assets/ejs.min.js"></script>
 <script type="text/javascript" src="/assets/bootbox.min.js"></script>
 <script type="text/javascript">
+$(document).ready(() => {
+  $("select").change(function() {
+    let level = $(this).val();
+    let id = $(this)
+      .parent()
+      .siblings("input[type='hidden']")
+      .val();
+    $.ajax({
+      url: "../api/editUser",
+      method: "POST",
+      data: {
+        newLevel: level,
+        id: id
+      }
+    });
+  });
+  $("select").each(function() {
+    let level = $(this).data("level");
+    $(this)
+      .children("option[value='" + level + "']")
+      .prop("selected", "true");
+  });
+});
 function deleteConfirm(el) {
   bootbox.confirm({
     message: "Are you sure you want to delete this article?",
@@ -58,14 +87,14 @@ function deleteConfirm(el) {
       }
     },
     callback: function(result) {
-      if (result) deleteArticle(el);
+      if (result) deleteUser(el);
     }
   });
 }
-function deleteArticle(el) {
+function deleteUser(el) {
   let id = $(el).data("id");
   $.ajax({
-    url: "/api/deleteArticle/" + id,
+    url: "/api/deleteUser/" + id,
     method: "POST",
     data: { id: id },
     success: data => {

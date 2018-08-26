@@ -1,7 +1,9 @@
 // Loading the modules
 const bodyParser = require("body-parser");
 const db = require("./db");
+const helpers = require("./helpers");
 const cookieParser = require("cookie-parser");
+const fetch = require("node-fetch");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const app = require("../app").app;
@@ -31,6 +33,81 @@ class Controller {
     );
     app.use(cookieParser());
   }
+  setApi() {
+    app.get("/api/articles", (req, res) => {
+      db.articleModel
+        .find()
+        .sort({ _id: "desc" })
+        .exec((err, result) => {
+          if (err) throw err;
+          res.send(result);
+        });
+    });
+
+    app.get("/api/article/:title", (req, res) => {
+      let title = req.params.title;
+      title = helpers.trimString(title);
+      db.articleModel.find({}, (err, result) => {
+        if (err) throw err;
+        let found = false;
+        result.forEach(el => {
+          let tmp = el.title;
+          tmp = helpers.trimString(tmp);
+          if (tmp === title) {
+            res.send(el);
+            found = true;
+          }
+        });
+        if (!found) res.send({ error: true });
+      });
+    });
+
+    app.post("/api/deleteArticle/:id", urlencodedParser, (req, res) => {
+      if (!req.body) return false;
+      let ok = true;
+      db.articleModel.deleteOne({ _id: req.body.id }, err => {
+        if (err) ok = false;
+        res.send({ ok: ok });
+      });
+    });
+
+    app.post("/api/article/add", urlencodedParser, (req, res) => {
+      if (!req.body) return res.sendStatus(400);
+
+      let data = {
+        title: req.body.title,
+        article: req.body.article,
+        author: req.session.username,
+        views: 0,
+        date: helpers.getCurrentDate(),
+        image: "https://via.placeholder.com/200x200"
+      };
+      db.addArticle(data);
+      res.send({ ok: true });
+    });
+
+    app.post("/api/deleteUser/:id", urlencodedParser, (req, res) => {
+      if (!req.body) return false;
+      let ok = true;
+      db.userModel.deleteOne({ _id: req.body.id }, err => {
+        if (err) ok = false;
+        res.send({ ok: ok });
+      });
+    });
+
+    app.post("/api/editUser", urlencodedParser, (req, res) => {
+      if (!req.body) console.log("error");
+      else {
+        db.userModel.findByIdAndUpdate(
+          req.body.id,
+          { level: req.body.newLevel },
+          err => {
+            if (err) throw err;
+          }
+        );
+      }
+    });
+  }
   setRoutes() {
     app.use((req, res, next) => {
       if (!req.session.username) {
@@ -40,65 +117,37 @@ class Controller {
       }
       next();
     });
-
-    app.get("/", (req, res) => {
-      db.articleModel.find({}, (err, result) => {
-        if (err) throw err;
-        res.render("home", {
-          session: req.session,
-          articles: result
-        });
+    app.use((req, res, next) => {
+      db.settingsModel.findById(db.settingsId, (err, settings) => {
+        if (err) next(err);
+        else {
+          req.session.settings = settings;
+          next();
+        }
       });
+    });
+    app.get("/", (req, res) => {
+      fetch("http://localhost:3000/api/articles")
+        .then(articles => articles.json())
+        .then(articles => {
+          res.render("home", {
+            session: req.session,
+            articles: articles
+          });
+        });
     });
 
     app.get("/article/:title", (req, res) => {
       let title = req.params.title;
-      title = title.replace(/\s+/g, "-").toLowerCase();
-      if (title == "new") {
-        res.render("article-new", { session: req.session });
-      } else {
-        db.articleModel.find({}, (err, result) => {
-          if (err) throw err;
-          let found = false;
-          result.forEach(el => {
-            let tmp = el.title;
-            tmp = tmp.replace(/\s+/g, "-").toLowerCase();
-            if (tmp == title) {
-              res.render("article", { session: req.session, data: el });
-              found = true;
-            }
-          });
-          if (!found) res.render("404");
+      fetch("http://localhost:3000/api/article/" + title)
+        .then(article => article.json())
+        .then(article => {
+          if (article.error) {
+            res.render("404");
+          } else {
+            res.render("article", { session: req.session, data: article });
+          }
         });
-      }
-    });
-
-    app.post("/article", urlencodedParser, (req, res) => {
-      if (!req.body) return res.sendStatus(400);
-      let today = new Date();
-      let dd = today.getDate();
-      let mm = today.getMonth() + 1; //January is 0!
-      let yyyy = today.getFullYear();
-
-      if (dd < 10) {
-        dd = "0" + dd;
-      }
-
-      if (mm < 10) {
-        mm = "0" + mm;
-      }
-
-      today = dd + "-" + mm + "-" + yyyy;
-      let data = {
-        title: req.body.title,
-        article: req.body.article,
-        author: req.body.author,
-        views: 0,
-        date: today,
-        image: "https://via.placeholder.com/200x200"
-      };
-      db.addArticle(data);
-      res.send("200");
     });
 
     app.get("/login", (req, res) => {
@@ -142,6 +191,7 @@ class Controller {
       let tmp = new db.userModel({
         username: req.body.username,
         email: req.body.email,
+        date: helpers.getCurrentDate(),
         password: req.body.password
       });
       tmp.save(err => {
@@ -162,7 +212,8 @@ class Controller {
     app.get("/admin", (req, res) => {
       res.render("admin/template", {
         session: req.session,
-        panel: "dashboard"
+        panel: "dashboard",
+        data: {}
       });
       // if (req.session.level) {
       //   if (req.session.level != "reader") {
@@ -175,10 +226,52 @@ class Controller {
       // }
     });
     app.get("/admin/:panel", (req, res) => {
-      res.render("admin/template", {
-        session: req.session,
-        panel: req.params.panel
-      });
+      switch (req.params.panel) {
+        case "dashboard":
+          res.render("admin/template", {
+            session: req.session,
+            panel: req.params.panel,
+            data: {}
+          });
+          break;
+        case "articles":
+          db.articleModel
+            .find()
+            .sort({ _id: "desc" })
+            .exec((err, articles) => {
+              if (err) throw err;
+              res.render("admin/template", {
+                session: req.session,
+                panel: req.params.panel,
+                data: articles
+              });
+            });
+          break;
+        case "add-article":
+          res.render("admin/template", {
+            session: req.session,
+            panel: req.params.panel,
+            data: {}
+          });
+          break;
+        case "users":
+          db.userModel
+            .find()
+            .sort({ _id: "desc" })
+            .exec((err, users) => {
+              if (err) throw err;
+              res.render("admin/template", {
+                session: req.session,
+                panel: req.params.panel,
+                data: users
+              });
+            });
+          break;
+        case "settings":
+          break;
+        default:
+          res.render("404");
+      }
       // if (req.session.level) {
       //   if (req.session.level != "reader") {
       //     res.render("admin", { session: req.session, panel:"dashboard" });

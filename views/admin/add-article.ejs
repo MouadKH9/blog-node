@@ -1,12 +1,12 @@
-<%- include('partials/nav') %>
-
-<div class="container main-cont">
-  <div class="row">
-    <div class="col-sm-12 col-md-9">
+<link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote-bs4.css" rel="stylesheet">
+<h2>Add a new article</h2>
+<div class="dashboard">
+  <div class="dashboard__item dashboard__item--full">
       <form>
         <input type="text" name="title" class="form-control" placeholder="Title">
-        <textarea rows="20" name="text" class="summernote"></textarea>
-        <input type="text" name="author" placeholder="Your Name" class="form-control">
+
+        <textarea name="text" class="summernote"></textarea>
+
         <button class="btn btn-info submit float-right">Add Article</button>
       </form>
       <div class="success">
@@ -15,8 +15,9 @@
         <a href="/"><i class="fa fa-home"></i> Go Home</a>
       </div>
     </div>
-  </div>
 </div>
+<script type="text/javascript" src="/assets/ejs.min.js"></script>
+<script type="text/javascript" src="/assets/bootbox.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote-bs4.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
@@ -24,27 +25,47 @@ $(document).ready(function() {
     height: 300
   });
 });
-$(".submit").on("click", e => {
-  e.preventDefault();
+function addConfirm() {
+  bootbox.confirm({
+    message: "Are you sure you want to add this article?",
+    buttons: {
+      confirm: {
+        label: "Yes",
+        className: "btn-success"
+      },
+      cancel: {
+        label: "No",
+        className: "btn-light"
+      }
+    },
+    callback: function(result) {
+      if (result) addArticle();
+    }
+  });
+}
+function addArticle() {
   $.ajax({
-    url: "./",
+    url: "/api/article/add",
     method: "POST",
     data: {
       title: $("input[name='title']").val(),
-      article: $("textarea").val(),
-      author: $("input[name='author']").val()
+      article: $("textarea").val()
     },
     success: function(data) {
-      if (data == "200") {
+      console.log(data);
+      if (data.ok) {
         var title = $("input[name='title']").val();
         title = title.replace(/\s+/g, "-").toLowerCase();
         $("#link").prop("href", "/article/" + title);
-        $("form").fadeOut("slow", function() {
+        $("form").fadeOut("slow", () => {
           $(".success").fadeIn("fast");
         });
       }
     }
   });
+}
+$(".submit").on("click", e => {
+  e.preventDefault();
+  addConfirm();
 });
 </script>
-<%- include('partials/footer') %>
